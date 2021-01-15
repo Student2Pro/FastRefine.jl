@@ -57,7 +57,7 @@ function solve(solver::DimGrid, problem::Problem) #original
 
         inter = intersection(problem.input, HPolytope(C, d))
 
-        if isempty(HPolytope(C_i, d_i)) == false
+        if isempty(inter) == false
             reach = forward_network(solver, problem.network, hyper)
             count3 += 1
             if !issubset(reach, problem.output)
