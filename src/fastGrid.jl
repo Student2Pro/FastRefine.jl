@@ -37,35 +37,8 @@ function solve(solver::FastGrid, problem::Problem) #original
     Al = zeros(k_0, k_0)
     Au = zeros(k_0, k_0)
 
-    Als = Array{Matrix,1}(undef, k_0)
-    Aus = Array{Matrix,1}(undef, k_0)
-
     dl = zeros(k_1)
     du = zeros(k_1)
-
-    for i in 1:k_0
-        Cls = zeros(k_1,k_0)
-        Cus = zeros(k_1,k_0)
-        for j in 1:k_1
-            if W[j,i] > 0
-                Cls[j,:] = -W[j,:]
-                Cus[j,:] = W[j,:]
-            else
-                Cls[j,:] = W[j,:]
-                Cus[j,:] = -W[j,:]
-            end
-        end
-        Als[i] = vcat(kb, Cls)
-        Aus[i] = vcat(kb, Cus)
-    end
-
-    Dls = zeros(k_0)
-    Dus = zeros(k_0)
-
-    for i in 1:k_0
-        Dls[i] = np.linalg.det(Als[i])
-        Dus[i] = np.linalg.det(Aus[i])
-    end
 
     bl = zeros(k_0)
     bu = zeros(k_0)
@@ -92,19 +65,25 @@ function solve(solver::FastGrid, problem::Problem) #original
         if isempty(inter) == false
             inner = true
             for j in 1:k_0
+                Al[1:k_0-k_1,:] = kb
+                Au[1:k_0-k_1,:] = kb
                 for k in k_1
                     if W[k,j] > 0
                         dl[k] = b[k] - local_lower[k]
+                        Al[k_0-k_1+k,:] = -W[k,:]
                         du[k] = local_upper[k] - b[k]
+                        Au[k_0-k_1+k,:] = W[k,:]
                     else
                         dl[k] = local_upper[k] - b[k]
+                        Al[k_0-k_1+k,:] = W[k,:]
                         du[k] = b[k] - local_lower[k]
+                        Au[k_0-k_1+k,:] = -W[k,:]
                     end
                 end
                 bl = vcat(kc, dl)
                 bu = vcat(kc, du)
-                pl = np.linalg.solve(Als[j], bl)
-                pu = np.linalg.solve(Aus[j], bu)
+                pl = np.linalg.solve(Al, bl)
+                pu = np.linalg.solve(Au, bu)
                 if pl[j] <= l[j] || u[j] <= pu[j]
                     inner = false
                     break
