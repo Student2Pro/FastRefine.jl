@@ -73,7 +73,8 @@ function solve(solver::FastGrid, problem::Problem) #original
     bu = zeros(k_0)
     kc = kb * center
 
-    count4 = 0
+    count4 = BigInt(0)
+    println("All: " * string())
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
