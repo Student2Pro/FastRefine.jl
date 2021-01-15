@@ -110,7 +110,7 @@ function solve(solver::FastGrid, problem::Problem) #original
                 bu = vcat(kc, du)
                 Al[:,j] = bl
                 Au[:,j] = bu
-                if np.linalg.det(Al) <= l[j] || u[j] <= np.linalg.det(Au)
+                if np.linalg.det(Al)/Dls[j] <= l[j] || u[j] <= np.linalg.det(Au)/Dus[j]
                     inner = false
                     break
                 end
