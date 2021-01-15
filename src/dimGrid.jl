@@ -27,11 +27,7 @@ function solve(solver::DimGrid, problem::Problem) #original
                 -W
     )
 
-    d_i = vcat( high(problem.input),
-                -low(problem.input),
-                -b,
-                b
-    )
+    d_i = zeros(zeros(2k_0+2k_1))
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
@@ -44,12 +40,13 @@ function solve(solver::DimGrid, problem::Problem) #original
         @. local_upper = min(local_lower + delta, upper)
         hyper = Hyperrectangle(low = local_lower, high = local_upper)
 
-        for j in 1:k_1
-            d_i[2k_0+j] += local_upper[j]
-            d_i[2k_0+k_1+j] -= local_lower[j]
-        end
+        d_i = vcat( high(problem.input),
+                    -low(problem.input),
+                    local_upper - b,
+                    b - local_lower
+        )
 
-        if !isempty(HPolytope(C_i, d_i))
+        if isempty(HPolytope(C_i, d_i)) == false
             println("Not empty!")
             reach = forward_network(solver, problem.network, hyper)
             if !issubset(reach, problem.output)

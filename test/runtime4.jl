@@ -22,7 +22,7 @@ print(file, "Test Result of Group 4:\n\n")
 time4 = 0
 
 for i = 1:1
-    timed_result =@timed solve(solver4, problem)
+    timed_result =@timed solve(solver, problem)
     print(file, "FastGrid - test " * string(i) * " - Time: " * string(timed_result.time) * " s")
     print(file, " - Output: " * string(timed_result.value) * "\n")
     global time4 += timed_result.time
