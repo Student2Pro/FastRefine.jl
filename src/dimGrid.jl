@@ -21,24 +21,17 @@ function solve(solver::DimGrid, problem::Problem) #original
     k_1 = size(W, 1)
     k_0 = size(W, 2)
 
-    C_i = zeros(2k_0+2k_1, k_0)
-    for i in 1:k_0
-        C_i[i,i] = 1.0
-        C_i[k_0+i,i] = -1.0
-    end
-    #C_i[1:2k_0,:] = C_0
-    d_i = zeros(2k_0+2k_1)
-    d_i[1:k_0] = high(problem.input)
-    d_i[k_0+1:2k_0] = -low(problem.input)
+    C_i = vcat( Array(Diagonal(ones(k_0))),
+                Array(Diagonal(ones(k_0))),
+                W,
+                -W
+    )
 
-    for j in 1:k_1
-        for k in 1:k_0
-            C_i[2k_0+j,k] = W[j,k]
-            C_i[2k_0+k_1+j,k] = -W[j,k]
-        end
-        d_i[2k_0+j] = -b[j]
-        d_i[2k_0+k_1+j] = b[j]
-    end
+    d_i = vcat( high(problem.input),
+                -low(problem.input),
+                -b,
+                b
+    )
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
@@ -57,6 +50,7 @@ function solve(solver::DimGrid, problem::Problem) #original
         end
 
         if !isempty(HPolytope(C_i, d_i))
+            println("Not empty!")
             reach = forward_network(solver, problem.network, hyper)
             if !issubset(reach, problem.output)
                 result = false
