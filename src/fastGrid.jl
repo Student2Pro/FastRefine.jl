@@ -41,24 +41,26 @@ function solve(solver::FastGrid, problem::Problem) #original
     Al = zeros(k_0, k_0)
     Au = zeros(k_0, k_0)
 
-    Cls = Array{Matrix,1}(undef, k_0)
-    Cus = Array{Matrix,1}(undef, k_0)
+    Als = Array{Matrix,1}(undef, k_0)
+    Aus = Array{Matrix,1}(undef, k_0)
 
     dl = zeros(k_1)
     du = zeros(k_1)
 
     for i in 1:k_0
-        Cls[i] = zeros(k_1,k_0)
-        Cus[i] = zeros(k_1,k_0)
+        Cls = zeros(k_1,k_0)
+        Cus = zeros(k_1,k_0)
         for j in 1:k_1
             if W[j,i] > 0
-                Cls[i][j,:] = -W[j,:]
-                Cus[i][j,:] = W[j,:]
+                Cls[j,:] = -W[j,:]
+                Cus[j,:] = W[j,:]
             else
-                Cls[i][j,:] = W[j,:]
-                Cus[i][j,:] = -W[j,:]
+                Cls[j,:] = W[j,:]
+                Cus[j,:] = -W[j,:]
             end
         end
+        Als[i] = vcat(kb, Cls)
+        Aus[i] = vcat(kb, Cus)
     end
 
     Dls = zeros(k_0)
@@ -96,8 +98,6 @@ function solve(solver::FastGrid, problem::Problem) #original
         if isempty(HPolytope(C_i, d_i)) == false
             inner = true
             for j in 1:k_0
-                Al = vcat(kb, Cls[j])
-                Au = vcat(kb, Cus[j])
                 for k in k_1
                     if W[k,j] > 0
                         dl[k] = b[k] - local_lower[k]
@@ -109,15 +109,15 @@ function solve(solver::FastGrid, problem::Problem) #original
                 end
                 bl = vcat(kc, dl)
                 bu = vcat(kc, du)
-                Al[:,j] = bl
-                Au[:,j] = bu
-                if np.linalg.det(Al)/Dls[j] <= l[j] || u[j] <= np.linalg.det(Au)/Dus[j]
+                pl = np.linalg.solve(Als[j], bl)
+                pu = np.linalg.solve(Aus[j], bu)
+                if pl[j] <= l[j] || u[j] <= pu[j]
                     inner = false
                     break
                 end
             end
 
-            if !inner
+            if inner == false
                 reach = forward_network(solver, problem.network, hyper)
                 count4 += 1
                 if !issubset(reach, problem.output)
