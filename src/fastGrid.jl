@@ -29,10 +29,10 @@ function solve(solver::FastGrid, problem::Problem) #original
     k_0 = size(W, 2)
 
     C = vcat(W, -W)
-
     d = zeros(2k_1)
 
     kb = p[k_1+1:k_0,:] #kernel basis
+    kc = kb * center
 
     Al = zeros(k_0, k_0)
     Au = zeros(k_0, k_0)
@@ -42,7 +42,6 @@ function solve(solver::FastGrid, problem::Problem) #original
 
     bl = zeros(k_0)
     bu = zeros(k_0)
-    kc = kb * center
 
     count4 = BigInt(0)
     println("All: " * string(prod(n_hypers_per_dim)) * " - " * string(prod(n_hypers_per_dim.-2)))
