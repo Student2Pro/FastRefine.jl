@@ -1,2 +1,5 @@
 Test Result of Group 4:
 
+FastGrid - test 1 - Time: 336.1456061 s - Output: BasicResult(:holds)
+Average time: 336.1456061 s
+

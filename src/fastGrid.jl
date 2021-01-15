@@ -25,6 +25,9 @@ function solve(solver::FastGrid, problem::Problem) #original
     lower, upper = low(input), high(input)
     n_hypers_per_dim = BigInt.(max.(ceil.(Int, (upper-lower) / delta), 1))
 
+    println("All: " * string(prod(n_hypers_per_dim)))
+    count = 0
+
     k_1 = size(W, 1)
     k_0 = size(W, 2)
 
@@ -128,12 +131,16 @@ function solve(solver::FastGrid, problem::Problem) #original
 
             if !inner
                 reach = forward_network(solver, problem.network, hyper)
+                count += 1
                 if !issubset(reach, problem.output)
                     result = false
                 end
             end
         end
     end
+
+    println("Verified: " * string(count))
+
     if result
         return BasicResult(:holds)
     end
