@@ -65,8 +65,8 @@ function solve(solver::FastGrid, problem::Problem) #original
     Dus = zeros(k_0)
 
     for i in 1:k_0
-        Dls[i] = np.linalg.det(hcat(kb, Cls[i]))
-        Dus[i] = np.linalg.det(hcat(kb, Cus[i]))
+        Dls[i] = np.linalg.det(vcat(kb, Cls[i]))
+        Dus[i] = np.linalg.det(vcat(kb, Cus[i]))
     end
 
     bl = zeros(k_0)
@@ -95,8 +95,8 @@ function solve(solver::FastGrid, problem::Problem) #original
         if isempty(HPolytope(C_i, d_i)) == false
             inner = true
             for j in 1:k_0
-                Al = hcat(kb, Cls[j])
-                Au = hcat(kb, Cus[j])
+                Al = vcat(kb, Cls[j])
+                Au = vcat(kb, Cus[j])
                 for k in k_1
                     if W[k,j] > 0
                         dl[k] = b[k] - local_lower[k]
@@ -106,8 +106,8 @@ function solve(solver::FastGrid, problem::Problem) #original
                         du[k] = b[k] - local_lower[k]
                     end
                 end
-                bl = hcat(kc, dl)
-                bu = hcat(kc, du)
+                bl = vcat(kc, dl)
+                bu = vcat(kc, du)
                 Al[:,j] = bl
                 Au[:,j] = bu
                 if np.linalg.det(Al) <= l[j] || u[j] <= np.linalg.det(Au)
