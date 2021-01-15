@@ -56,8 +56,8 @@ function solve(solver::FastGrid, problem::Problem) #original
     Aus = Array{Matrix,1}(undef, k_0)
 
     for k in 1:k_0
-        Als[k] = Al
-        Aus[k] = Au
+        Als[k] = deepcopy(Al)
+        Aus[k] = deepcopy(Au)
     end
 
     for j in 1:k_1
@@ -84,8 +84,8 @@ function solve(solver::FastGrid, problem::Problem) #original
     Dus = zeros(k_0)
 
     for j in 1:k_0
-        Dls[j] = LinearAlgebra.det(Als[j])
-        Dus[j] = LinearAlgebra.det(Aus[j])
+        Dls[j] = np.linalg.det(Als[j])
+        Dus[j] = np.linalg.det(Aus[j])
     end
 
     #Oi
@@ -122,10 +122,12 @@ function solve(solver::FastGrid, problem::Problem) #original
                 end
                 Als[j][:,j] = bl
                 Aus[j][:,j] = bu
-                Ol[j] = LinearAlgebra.det(Als[j]) / Dls[j]
-                Ou[j] = LinearAlgebra.det(Aus[j]) / Dus[j]
+                Ol[j] = np.linalg.det(Als[j]) / Dls[j]
+                Ou[j] = np.linalg.det(Aus[j]) / Dus[j]
                 if l[j] >= Ol[j] || Ou[j] >= u[j]
                     inner = false
+                    println("Hull!")
+                    break
                 end
             end
 

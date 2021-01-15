@@ -4,10 +4,10 @@ import FastRefine: forward_network, forward_affine_map, ishull
 
 nnet = read_nnet("nnet/86442.nnet")
 
-delta = 1.0
+delta = 0.2
 
 
-solver4 = FastGrid(delta)
+solver = FastGrid(delta)
 
 in_hyper = Hyperrectangle(fill(1.0, 8), fill(1.0, 8))
 out_hyper = Hyperrectangle(fill(0.0, 2), fill(10.0, 2))
