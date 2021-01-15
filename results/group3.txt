@@ -1,0 +1,5 @@
+Test Result of Group 3:
+
+DimGrid - test 1 - Time: 6.243050001 s - Output: BasicResult(:holds)
+Average time: 6.243050001 s
+
