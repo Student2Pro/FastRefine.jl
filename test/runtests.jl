@@ -1,6 +1,6 @@
-using FastRefine
+using FastRef
 using Test
 
-@testset "FastRefine.jl" begin
+@testset "FastRef.jl" begin
     # Write your tests here.
 end
