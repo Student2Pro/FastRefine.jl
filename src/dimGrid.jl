@@ -29,6 +29,9 @@ function solve(solver::DimGrid, problem::Problem) #original
 
     d_i = zeros(2k_0+2k_1)
 
+    count3 = BigInt(0)
+    println("All: " * string(prod(n_hypers_per_dim)))
+
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
     for i in 1:prod(n_hypers_per_dim)
@@ -48,11 +51,15 @@ function solve(solver::DimGrid, problem::Problem) #original
 
         if isempty(HPolytope(C_i, d_i)) == false
             reach = forward_network(solver, problem.network, hyper)
+            count3 += 1
             if !issubset(reach, problem.output)
                 result = false
             end
         end
     end
+
+    println("Verified: " * string(count3))
+
     if result
         return BasicResult(:holds)
     end

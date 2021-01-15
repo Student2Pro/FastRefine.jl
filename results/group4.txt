@@ -23,3 +23,15 @@ Test Result of Group 4:
 FastGrid - test 1 - Time: 393.6898131 s - Output: BasicResult(:holds)
 Average time: 393.6898131 s
 
+Test Result of Group 4:
+
+Test Result of Group 4:
+
+FastGrid - test 1 - Time: 12.5199512 s - Output: BasicResult(:holds)
+Average time: 12.5199512 s
+
+Test Result of Group 4:
+
+FastGrid - test 1 - Time: 20.2555338 s - Output: BasicResult(:holds)
+Average time: 20.2555338 s
+
