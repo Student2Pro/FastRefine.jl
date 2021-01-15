@@ -27,7 +27,7 @@ function solve(solver::DimGrid, problem::Problem) #original
                 -W
     )
 
-    d_i = zeros(zeros(2k_0+2k_1))
+    d_i = zeros(2k_0+2k_1)
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
