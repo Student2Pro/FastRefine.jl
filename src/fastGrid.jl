@@ -74,7 +74,7 @@ function solve(solver::FastGrid, problem::Problem) #original
     kc = kb * center
 
     count4 = BigInt(0)
-    println("All: " * string())
+    println("All: " * string(prod(n_hypers_per_dim)))
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
