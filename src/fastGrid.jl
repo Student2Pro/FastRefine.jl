@@ -114,6 +114,7 @@ function solve(solver::FastGrid, problem::Problem) #original
                     inner = false
                     break
                 end
+            end
 
             if !inner
                 reach = forward_network(solver, problem.network, hyper)
