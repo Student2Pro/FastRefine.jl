@@ -28,13 +28,9 @@ function solve(solver::FastGrid, problem::Problem) #original
     k_1 = size(W, 1)
     k_0 = size(W, 2)
 
-    C_i = vcat( Array(Diagonal(ones(k_0))),
-                Array(Diagonal(ones(k_0))),
-                W,
-                -W
-    )
+    C = vcat(W, -W)
 
-    d_i = zeros(2k_0+2k_1)
+    d = zeros(2k_1)
 
     kb = p[k_1+1:k_0,:] #kernel basis
 
@@ -89,13 +85,11 @@ function solve(solver::FastGrid, problem::Problem) #original
         @. local_upper = min(local_lower + delta, upper)
         hyper = Hyperrectangle(low = local_lower, high = local_upper)
 
-        d_i = vcat( high(problem.input),
-                    -low(problem.input),
-                    local_upper - b,
-                    b - local_lower
-        )
+        d = vcat(local_upper - b, b - local_lower)
 
-        if isempty(HPolytope(C_i, d_i)) == false
+        inter = intersection(problem.input, HPolytope(C, d))
+
+        if isempty(inter) == false
             inner = true
             for j in 1:k_0
                 for k in k_1
