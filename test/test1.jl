@@ -24,4 +24,4 @@ HP = HPolytope(C, d)
 
 inter = intersection(in_hyper, HP)
 
-isempty(inter)
+a = isempty(inter)

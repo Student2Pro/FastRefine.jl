@@ -27,7 +27,7 @@ function solve(solver::DimGrid, problem::Problem) #original
                 -W
     )
 =#
-    C = vcat(w, -W)
+    C = vcat(W, -W)
 
     d = zeros(2k_1)
 
