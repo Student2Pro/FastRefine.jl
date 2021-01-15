@@ -20,14 +20,18 @@ function solve(solver::DimGrid, problem::Problem) #original
 
     k_1 = size(W, 1)
     k_0 = size(W, 2)
-
+#=
     C_i = vcat( Array(Diagonal(ones(k_0))),
                 Array(Diagonal(ones(k_0))),
                 W,
                 -W
     )
+=#
+    C = vcat(w, -W)
 
-    d_i = zeros(2k_0+2k_1)
+    d = zeros(2k_1)
+
+    #d_i = zeros(2k_0+2k_1)
 
     count3 = BigInt(0)
     println("All: " * string(prod(n_hypers_per_dim)))
@@ -42,12 +46,16 @@ function solve(solver::DimGrid, problem::Problem) #original
         @. local_lower = lower + delta * (CI - 1)
         @. local_upper = min(local_lower + delta, upper)
         hyper = Hyperrectangle(low = local_lower, high = local_upper)
-
+#=
         d_i = vcat( high(problem.input),
                     -low(problem.input),
                     local_upper - b,
                     b - local_lower
         )
+=#
+        d = vcat(local_upper - b, b - local_lower)
+
+        inter = intersection(problem.input, HPolytope(C, d))
 
         if isempty(HPolytope(C_i, d_i)) == false
             reach = forward_network(solver, problem.network, hyper)

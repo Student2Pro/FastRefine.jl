@@ -1,21 +1,27 @@
-using FastRef
+using FastRefine
 using LazySets
-import FastRef: forward_network, forward_affine_map
+import FastRefine: forward_network, forward_affine_map, ishull
 
-center = fill(1.0, 10)
-radius = fill(1.0, 10)
-inputSet = Hyperrectangle(center, radius)
+nnet = read_nnet("nnet/86442.nnet")
 
-nnet = read_nnet("nnet/test10.nnet")
-solver1 = MaxSens(2.0, true)
-solver2 = FastGrid(2.0)
+delta = 0.4
 
-(W, b) = (nnet.layers[1].weights, nnet.layers[1].bias)
+solver3 = DimGrid(delta)
 
-outputSet1 = forward_network(solver1, nnet, inputSet)
+in_hyper = Hyperrectangle(fill(1.0, 8), fill(1.0, 8))
+out_hyper = Hyperrectangle(fill(0.0, 2), fill(10.0, 2))
+problem = Problem(nnet, in_hyper, out_hyper)
 
-z = forward_affine_map(solver2, W, b, inputSet)
-outputSet2 = forward_network(solver2, nnet, z)
+(W, b) = (problem.network.layers[1].weights, problem.network.layers[1].bias)
+input1 = forward_affine_map(solver, W, b, problem.input)
+lower, upper = low(input1), high(input1)
+n_hypers_per_dim = BigInt.(max.(ceil.(Int, (upper-lower) / delta), 1))
 
-println(outputSet1)
-println(outputSet2)
+C = vcat(W, -W)
+d = vcat(upper-b, b-lower)
+
+HP = HPolytope(C, d)
+
+inter = intersection(in_hyper, HP)
+
+isempty(inter)

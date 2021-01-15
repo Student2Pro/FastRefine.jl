@@ -4,7 +4,7 @@ import FastRefine: forward_network, forward_affine_map, ishull
 
 nnet = read_nnet("nnet/86442.nnet")
 
-delta = 0.3
+delta = 0.4
 
 
 solver = FastGrid(delta)
@@ -13,9 +13,15 @@ in_hyper = Hyperrectangle(fill(1.0, 8), fill(1.0, 8))
 out_hyper = Hyperrectangle(fill(0.0, 2), fill(10.0, 2))
 problem = Problem(nnet, in_hyper, out_hyper)
 
+#=
+(W, b) = (problem.network.layers[1].weights, problem.network.layers[1].bias)
+input = forward_affine_map(solver, W, b, problem.input)
+lower, upper = low(input), high(input)
+n_hypers_per_dim = BigInt.(max.(ceil.(Int, (upper-lower) / delta), 1))
+=#
+
 file = open("results/group4.txt", "a")
 print(file, "Test Result of Group 4:\n\n")
-
 
 #solver4
 
