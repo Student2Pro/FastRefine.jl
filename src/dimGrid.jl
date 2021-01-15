@@ -47,7 +47,6 @@ function solve(solver::DimGrid, problem::Problem) #original
         )
 
         if isempty(HPolytope(C_i, d_i)) == false
-            println("Not empty!")
             reach = forward_network(solver, problem.network, hyper)
             if !issubset(reach, problem.output)
                 result = false
