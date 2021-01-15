@@ -25,72 +25,55 @@ function solve(solver::FastGrid, problem::Problem) #original
     lower, upper = low(input), high(input)
     n_hypers_per_dim = BigInt.(max.(ceil.(Int, (upper-lower) / delta), 1))
 
-    println("All: " * string(prod(n_hypers_per_dim)))
-    count = 0
-
     k_1 = size(W, 1)
     k_0 = size(W, 2)
 
-    C_i = zeros(2k_0+2k_1, k_0)
-    for i in 1:k_0
-        C_i[i,i] = 1.0
-        C_i[k_0+i,i] = -1.0
-    end
-    #C_i[1:2k_0,:] = C_0
+    C_i = vcat( Array(Diagonal(ones(k_0))),
+                Array(Diagonal(ones(k_0))),
+                W,
+                -W
+    )
+
     d_i = zeros(2k_0+2k_1)
-    d_i[1:k_0] = u
-    d_i[k_0+1:2k_0] = -l
 
     kb = p[k_1+1:k_0,:] #kernel basis
 
     Al = zeros(k_0, k_0)
     Au = zeros(k_0, k_0)
-    Al[1:k_0-k_1,:] = kb
-    Au[1:k_0-k_1,:] = kb
-    bl = zeros(k_0)
-    bu = zeros(k_0)
-    bl[1:k_0-k_1] = kb * center
-    bu[1:k_0-k_1] = kb * center
 
-    Als = Array{Matrix,1}(undef, k_0)
-    Aus = Array{Matrix,1}(undef, k_0)
+    Cls = Array{Matrix,1}(undef, k_0)
+    Cus = Array{Matrix,1}(undef, k_0)
 
-    for k in 1:k_0
-        Als[k] = deepcopy(Al)
-        Aus[k] = deepcopy(Au)
-    end
+    dl = zeros(k_1)
+    du = zeros(k_1)
 
-    for j in 1:k_1
-        for k in 1:k_0
-            C_i[2k_0+j,k] = W[j,k]
-            C_i[2k_0+k_1+j,k] = -W[j,k]
-            if W[j,k] > 0
-                Als[k][k_0-k_1+j,:] = -W[j,:]
-                Aus[k][k_0-k_1+j,:] = W[j,:]
-                bl[k_0-k_1+j] = b[j]
-                bu[k_0-k_1+j] = -b[j]
+    for i in 1:k_0
+        Cls[i] = zeros(k_1,k_0)
+        Cus[i] = zeros(k_1,k_0)
+        for j in 1:k_1
+            if W[j,i] > 0
+                Cls[i][j,:] = -W[j,:]
+                Cus[i][j,:] = W[j,:]
             else
-                Als[k][k_0-k_1+j,:] = W[j,:]
-                Aus[k][k_0-k_1+j,:] = -W[j,:]
-                bl[k_0-k_1+j] = -b[j]
-                bu[k_0-k_1+j] = b[j]
+                Cls[i][j,:] = W[j,:]
+                Cus[i][j,:] = -W[j,:]
             end
         end
-        d_i[2k_0+j] = -b[j]
-        d_i[2k_0+k_1+j] = b[j]
     end
 
     Dls = zeros(k_0)
     Dus = zeros(k_0)
 
-    for j in 1:k_0
-        Dls[j] = np.linalg.det(Als[j])
-        Dus[j] = np.linalg.det(Aus[j])
+    for i in 1:k_0
+        Dls[i] = np.linalg.det(hcat(kb, Cls[i]))
+        Dus[i] = np.linalg.det(hcat(kb, Cus[i]))
     end
 
-    #Oi
-    Ol = zeros(k_0)
-    Ou = zeros(k_0)
+    bl = zeros(k_0)
+    bu = zeros(k_0)
+    kc = kb * center
+
+    count4 = 0
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
@@ -103,39 +86,38 @@ function solve(solver::FastGrid, problem::Problem) #original
         @. local_upper = min(local_lower + delta, upper)
         hyper = Hyperrectangle(low = local_lower, high = local_upper)
 
-        for j in 1:k_1
-            d_i[2k_0+j] += local_upper[j]
-            d_i[2k_0+k_1+j] -= local_lower[j]
-        end
+        d_i = vcat( high(problem.input),
+                    -low(problem.input),
+                    local_upper - b,
+                    b - local_lower
+        )
 
-        if !isempty(HPolytope(C_i, d_i))
+        if isempty(HPolytope(C_i, d_i)) == false
             inner = true
             for j in 1:k_0
-                for k in 1:k_1
-                    if Au[k_0-k_1+k,j] == W[k,j]
-                        bl[k_0-k_1+k] = -local_lower[k] + b[k]
-                        bu[k_0-k_1+k] = local_upper[k] - b[k]
+                Al = hcat(kb, Cls[j])
+                Au = hcat(kb, Cus[j])
+                for k in k_1
+                    if W[k,j] > 0
+                        dl[k] = b[k] - local_lower[k]
+                        du[k] = local_upper[k] - b[k]
                     else
-                        bl[k_0-k_1+k] = local_upper[k] - b[k]
-                        bu[k_0-k_1+k] = -local_lower[k] + b[k]
+                        dl[k] = local_upper[k] - b[k]
+                        du[k] = b[k] - local_lower[k]
                     end
                 end
-                Als[j][:,j] = bl
-                Aus[j][:,j] = bu
-                Ol[j] = np.linalg.det(Als[j]) / Dls[j]
-                Ou[j] = np.linalg.det(Aus[j]) / Dus[j]
-                println("Ol[j]: " * string(Ol[j]))
-                println("Ou[j]: " * string(Ou[j]))
-                if l[j] >= Ol[j] || Ou[j] >= u[j]
+                bl = hcat(kc, dl)
+                bu = hcat(kc, du)
+                Al[:,j] = bl
+                Au[:,j] = bu
+                if np.linalg.det(Al) <= l[j] || u[j] <= np.linalg.det(Au)
                     inner = false
-                    println("Hull!")
                     break
                 end
-            end
 
             if !inner
                 reach = forward_network(solver, problem.network, hyper)
-                count += 1
+                count4 += 1
                 if !issubset(reach, problem.output)
                     result = false
                 end
@@ -143,7 +125,7 @@ function solve(solver::FastGrid, problem::Problem) #original
         end
     end
 
-    println("Verified: " * string(count))
+    println("Verified: " * string(count4))
 
     if result
         return BasicResult(:holds)
