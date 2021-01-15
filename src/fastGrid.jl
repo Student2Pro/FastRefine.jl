@@ -67,8 +67,8 @@ function solve(solver::FastGrid, problem::Problem) #original
     Dus = zeros(k_0)
 
     for i in 1:k_0
-        Dls[i] = np.linalg.det(vcat(kb, Cls[i]))
-        Dus[i] = np.linalg.det(vcat(kb, Cus[i]))
+        Dls[i] = np.linalg.det(Als[i])
+        Dus[i] = np.linalg.det(Aus[i])
     end
 
     bl = zeros(k_0)
