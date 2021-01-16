@@ -11,9 +11,6 @@ function solve(solver::FastGrid, problem::Problem) #original
     center = problem.input.center
     radius = problem.input.radius[1]
 
-    l = low(problem.input)
-    u = high(problem.input)
-
     (W, b) = (problem.network.layers[1].weights, problem.network.layers[1].bias)
 
     np = pyimport("numpy")
@@ -42,6 +39,9 @@ function solve(solver::FastGrid, problem::Problem) #original
 
     bl = zeros(k_0)
     bu = zeros(k_0)
+
+    pl = zeros(k_0)
+    pu = zeros(k_0)
 
     count4 = BigInt(0)
     println("All: " * string(prod(n_hypers_per_dim)) * " - " * string(prod(n_hypers_per_dim.-2)))
@@ -81,7 +81,7 @@ function solve(solver::FastGrid, problem::Problem) #original
                 bu = vcat(kc, du)
                 pl = np.linalg.solve(Al, bl)
                 pu = np.linalg.solve(Au, bu)
-                if pl[j] <= l[j] || u[j] <= pu[j]
+                if pl[j] ≤ low(problem.input)[j] || high(problem.input)[j] ≤ pu[j]
                     inner = false
                     println("$(i)-$(j): $(l[j]) $(pl[j]) $(pu[j]) $(u[j])")
                     break
