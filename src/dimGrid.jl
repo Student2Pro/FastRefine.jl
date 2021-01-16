@@ -55,7 +55,7 @@ function solve(solver::DimGrid, problem::Problem) #original
 =#
         d = vcat(local_upper - b, b - local_lower)
 
-        inter = intersection(problem.input, HPolytope(C, d))
+        inter = intersection(problem.input, HPolyhedron(C, d))
 
         if isempty(inter) == false
             reach = forward_network(solver, problem.network, hyper)

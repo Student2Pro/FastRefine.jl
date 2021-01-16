@@ -15,3 +15,8 @@ Test Result of Group 3:
 DimGrid - test 1 - Time: 24.1828476 s - Output: BasicResult(:holds)
 Average time: 24.1828476 s
 
+Test Result of Group 3:
+
+DimGrid - test 1 - Time: 621.5745692 s - Output: BasicResult(:holds)
+Average time: 621.5745692 s
+
