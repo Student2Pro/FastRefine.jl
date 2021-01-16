@@ -2,13 +2,13 @@ using FastRefine
 using LazySets
 import FastRefine: forward_network, forward_affine_map, ishull
 
-nnet = read_nnet("nnet/86442.nnet")
+nnet = read_nnet("nnet/test3.nnet")
 
-delta = 0.2
+delta = 0.01
 
 solver = FastGrid(delta)
 
-in_hyper = Hyperrectangle(fill(1.0, 8), fill(1.0, 8))
+in_hyper = Hyperrectangle(fill(1.0, 3), fill(1.0, 3))
 out_hyper = Hyperrectangle(fill(0.0, 2), fill(10.0, 2))
 problem = Problem(nnet, in_hyper, out_hyper)
 

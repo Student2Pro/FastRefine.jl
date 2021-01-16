@@ -56,6 +56,7 @@ function solve(solver::FastGrid, problem::Problem) #original
     pl = zeros(k_0)
     pu = zeros(k_0) =#
 
+    count3 = BigInt(0)
     count4 = BigInt(0)
     println("All: " * string(prod(n_hypers_per_dim)) * " - " * string(prod(n_hypers_per_dim.-2)))
 
@@ -77,6 +78,7 @@ function solve(solver::FastGrid, problem::Problem) #original
         inter = intersection(problem.input, P_i)
 
         if isempty(inter) == false
+            count3 += 1
             O_i = box_approximation(intersection(P_i, S))
             inner = true
             for j in 1:k_0
@@ -126,7 +128,7 @@ function solve(solver::FastGrid, problem::Problem) #original
         end
     end
 
-    println("Verified: " * string(count4))
+    println("Verified: " * string(count4) * "in" * string(count3))
 
     if result
         return BasicResult(:holds)
