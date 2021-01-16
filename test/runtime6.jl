@@ -4,7 +4,7 @@ import FastRefine: forward_network, forward_affine_map, ishull
 
 nnet = read_nnet("nnet/test3.nnet")
 
-delta = 0.05
+delta = 0.00001
 
 solver = FastTree(delta)
 

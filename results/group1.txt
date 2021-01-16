@@ -1,0 +1,11 @@
+Test Result of Group 1:
+
+MaxSens - test 1 - Time: 1.2109119 s - Output: BasicResult(:holds)
+Average time: 1.2109119 s
+
+HullGrid - test 1 - Time: 0.5329214 s - Output: BasicResult(:holds)
+Average time: 0.5329214 s
+
+DimGrid - test 1 - Time: 88.6552004 s - Output: BasicResult(:holds)
+Average time: 88.6552004 s
+

@@ -102,7 +102,7 @@ function solve(solver::FastGrid, problem::Problem) #original
         end
     end
 
-    println("Verified: " * string(count4) * "in" * string(count3))
+    println("Verified: " * string(count4))
 
     if result
         return BasicResult(:holds)
