@@ -13,6 +13,8 @@ function solve(solver::DimTree, problem::Problem)
     lower, upper = low(input), high(input)
     local_lower, local_upper = similar(lower), similar(lower)
 
+    k_1 = size(W, 1)
+
     C = vcat(W, -W)
     d = zeros(2k_1)
 

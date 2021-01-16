@@ -13,14 +13,14 @@ function solve(solver::FastTree, problem::Problem)
     lower, upper = low(input), high(input)
     local_lower, local_upper = similar(lower), similar(lower)
 
-    C = vcat(W, -W)
-    d = zeros(2k_1)
-
     np = pyimport("numpy")
     q, e, p = np.linalg.svd(W)
 
     k_1 = size(W, 1)
     k_0 = size(W, 2)
+
+    C = vcat(W, -W)
+    d = zeros(2k_1)
 
     hps = Array{Hyperplane, 1}(undef, k_0-k_1)
 
