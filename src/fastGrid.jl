@@ -64,19 +64,17 @@ function solve(solver::FastGrid, problem::Problem) #original
         if isempty(inter) == false
             inner = true
             for j in 1:k_0
-                Al[1:k_0-k_1,:] = kb
-                Au[1:k_0-k_1,:] = kb
+                Al = vcat(kb, W)
+                Au = vcat(kb, W)
                 for k in k_1
                     if W[k,j] > 0
                         dl[k] = b[k] - local_lower[k]
-                        Al[k_0-k_1+k,:] = -W[k,:]
                         du[k] = local_upper[k] - b[k]
-                        Au[k_0-k_1+k,:] = W[k,:]
+                        Al[k_0-k_1+k,:] *= -1
                     else
                         dl[k] = local_upper[k] - b[k]
-                        Al[k_0-k_1+k,:] = W[k,:]
                         du[k] = b[k] - local_lower[k]
-                        Au[k_0-k_1+k,:] = -W[k,:]
+                        Au[k_0-k_1+k,:] *= -1
                     end
                 end
                 bl = vcat(kc, dl)
