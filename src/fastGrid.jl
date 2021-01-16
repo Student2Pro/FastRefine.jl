@@ -27,8 +27,8 @@ function solve(solver::FastGrid, problem::Problem) #original
 
     hps = Array{Hyperplane, 1}(undef, k_0-k_1)
 
-    for i in k_1:k_0
-        hps[i+1-k_1] = Hyperplane(p[k_1,:], dot(p[k_1,:], center))
+    for i in k_1+1:k_0
+        hps[i-k_1] = Hyperplane(p[i,:], dot(p[i,:], center))
     end
 
     S = hps[1]
