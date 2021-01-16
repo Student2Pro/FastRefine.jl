@@ -2,7 +2,7 @@ using FastRefine
 using LazySets
 import FastRefine: forward_network, forward_affine_map, ishull
 
-nnet = read_nnet("nnet/test3.nnet")
+nnet = read_nnet("nnet/64442.nnet")
 
 delta = 0.05
 
