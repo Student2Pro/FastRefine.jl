@@ -48,7 +48,7 @@ function solve(solver::FastGrid, problem::Problem) #original
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
-    for i in 1:10000#prod(n_hypers_per_dim)
+    for i in 1:prod(n_hypers_per_dim)
         n = i
         for j in firstindex(CI):lastindex(CI)
             n, CI[j] = fldmod1(n, n_hypers_per_dim[j])
@@ -83,7 +83,7 @@ function solve(solver::FastGrid, problem::Problem) #original
                 pu = np.linalg.solve(Au, bu)
                 if pl[j] ≤ low(problem.input)[j] || high(problem.input)[j] ≤ pu[j]
                     inner = false
-                    println("$(i)-$(j): $(low(problem.input)[j]) $(pl[j]) $(pu[j]) $(high(problem.input)[j])")
+                    #println("$(i)-$(j): $(low(problem.input)[j]) $(pl[j]) $(pu[j]) $(high(problem.input)[j])")
                     break
                 end
             end

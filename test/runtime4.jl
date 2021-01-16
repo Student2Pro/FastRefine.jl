@@ -4,8 +4,7 @@ import FastRefine: forward_network, forward_affine_map, ishull
 
 nnet = read_nnet("nnet/86442.nnet")
 
-delta = 0.4
-
+delta = 0.2
 
 solver = FastGrid(delta)
 
