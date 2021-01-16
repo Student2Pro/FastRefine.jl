@@ -10,6 +10,30 @@ function solve(solver::FastTree, problem::Problem)
     (W, b) = (problem.network.layers[1].weights, problem.network.layers[1].bias)
 
     input = forward_affine_map(solver, W, b, problem.input)
+    lower, upper = low(input), high(input)
+    local_lower, local_upper = similar(lower), similar(lower)
+
+    C = vcat(W, -W)
+    d = zeros(2k_1)
+
+    np = pyimport("numpy")
+    q, e, p = np.linalg.svd(W)
+
+    k_1 = size(W, 1)
+    k_0 = size(W, 2)
+
+    hps = Array{Hyperplane, 1}(undef, k_0-k_1)
+
+    for i in k_1+1:k_0
+        hps[i-k_1] = Hyperplane(p[i,:], dot(p[i,:], center))
+    end
+
+    S = hps[1]
+    if k_0-k_1 > 1
+        for i in 2:k_0-k_1
+            S = intersection(S, hps[i])
+        end
+    end
 
     stack = Vector{Hyperrectangle}(undef, 0)
     push!(stack, input)
@@ -23,9 +47,32 @@ function solve(solver::FastTree, problem::Problem)
             if get_largest_width(interval) > solver.tolerance
                 sections = bisect(interval)
                 for i in 1:2
-                    if ishull(sections[i], problem.input, W, b)
-                        push!(stack, sections[i])
-                        #count += 1
+                    local_lower = low(sections[i])
+                    local_upper = high(sections[i])
+
+                    d = vcat(local_upper - b, b - local_lower)
+                    P_i = HPolyhedron(C, d)
+
+                    inter = intersection(problem.input, P_i)
+
+                    if isempty(inter) == false
+                        O_i = box_approximation(intersection(P_i, S))
+                        inner = true
+                        for j in 1:k_0
+                            if low(O_i)[j] ≤ low(problem.input)[j]
+                                inner = false
+                                break
+                            end
+
+                            if high(problem.input)[j] ≤ high(O_i)[j]
+                                inner = false
+                                break
+                            end
+                        end
+                        if inner == false
+                            push!(stack, sections[i])
+                            #count += 1
+                        end
                     end
                 end
             else

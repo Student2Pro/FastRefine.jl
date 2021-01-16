@@ -14,7 +14,6 @@ function solve(solver::FastGrid, problem::Problem) #original
     (W, b) = (problem.network.layers[1].weights, problem.network.layers[1].bias)
 
     np = pyimport("numpy")
-
     q, e, p = np.linalg.svd(W)
 
     input = forward_affine_map(solver, W, b, problem.input)
@@ -56,9 +55,9 @@ function solve(solver::FastGrid, problem::Problem) #original
     pl = zeros(k_0)
     pu = zeros(k_0) =#
 
-    count3 = BigInt(0)
+    #count3 = BigInt(0)
     count4 = BigInt(0)
-    println("All: " * string(prod(n_hypers_per_dim)) * " - " * string(prod(n_hypers_per_dim.-2)))
+    #println("All: " * string(prod(n_hypers_per_dim)) * " - " * string(prod(n_hypers_per_dim.-2)))
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
@@ -78,37 +77,12 @@ function solve(solver::FastGrid, problem::Problem) #original
         inter = intersection(problem.input, P_i)
 
         if isempty(inter) == false
-            count3 += 1
+            #count3 += 1
             O_i = box_approximation(intersection(P_i, S))
             inner = true
             for j in 1:k_0
-                #=
-                Al = vcat(kb, W)
-                Au = vcat(kb, W)
-                for k in k_1
-                    if W[k,j] > 0
-                        dl[k] = b[k] - local_lower[k]
-                        du[k] = local_upper[k] - b[k]
-                        Al[k_0-k_1+k,:] *= -1
-                    else
-                        dl[k] = local_upper[k] - b[k]
-                        du[k] = b[k] - local_lower[k]
-                        Au[k_0-k_1+k,:] *= -1
-                    end
-                end
-                bl = vcat(kc, dl)
-                bu = vcat(kc, du)
-                pl = np.linalg.solve(Al, bl)
-                pu = np.linalg.solve(Au, bu)
-                if pl[j] ≤ low(problem.input)[j] || high(problem.input)[j] ≤ pu[j]
-                    inner = false
-                    #println("$(i)-$(j): $(low(problem.input)[j]) $(pl[j]) $(pu[j]) $(high(problem.input)[j])")
-                    break
-                end
-                =#
                 if low(O_i)[j] ≤ low(problem.input)[j]
                     inner = false
-                    #println("$(i)-$(j): $(low(problem.input)[j]) $(pl[j]) $(pu[j]) $(high(problem.input)[j])")
                     break
                 end
 

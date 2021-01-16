@@ -6,7 +6,7 @@ nnet = read_nnet("nnet/test3.nnet")
 
 delta = 0.05
 
-solver = FastGrid(delta)
+solver = DimTree(delta)
 
 in_hyper = Hyperrectangle(fill(1.0, 3), fill(1.0, 3))
 out_hyper = Hyperrectangle(fill(0.0, 2), fill(10.0, 2))
@@ -19,8 +19,8 @@ lower, upper = low(input), high(input)
 n_hypers_per_dim = BigInt.(max.(ceil.(Int, (upper-lower) / delta), 1))
 =#
 
-file = open("results/group4.txt", "a")
-print(file, "Test Result of Group 4:\n\n")
+file = open("results/group5.txt", "a")
+print(file, "Test Result of Group 5:\n\n")
 
 #solver4
 
@@ -28,7 +28,7 @@ time4 = 0
 
 for i = 1:1
     timed_result =@timed solve(solver, problem)
-    print(file, "FastGrid - test " * string(i) * " - Time: " * string(timed_result.time) * " s")
+    print(file, "DimTree - test " * string(i) * " - Time: " * string(timed_result.time) * " s")
     print(file, " - Output: " * string(timed_result.value) * "\n")
     global time4 += timed_result.time
 end

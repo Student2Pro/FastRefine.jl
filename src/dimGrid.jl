@@ -28,13 +28,10 @@ function solve(solver::DimGrid, problem::Problem) #original
     )
 =#
     C = vcat(W, -W)
-
     d = zeros(2k_1)
 
-    #d_i = zeros(2k_0+2k_1)
-
     count3 = BigInt(0)
-    println("All: " * string(prod(n_hypers_per_dim)))
+    #println("All: " * string(prod(n_hypers_per_dim)))
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
