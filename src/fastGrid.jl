@@ -83,7 +83,7 @@ function solve(solver::FastGrid, problem::Problem) #original
                 pu = np.linalg.solve(Au, bu)
                 if pl[j] ≤ low(problem.input)[j] || high(problem.input)[j] ≤ pu[j]
                     inner = false
-                    println("$(i)-$(j): $(l[j]) $(pl[j]) $(pu[j]) $(u[j])")
+                    println("$(i)-$(j): $(low(problem.input)[j]) $(pl[j]) $(pu[j]) $(high(problem.input)[j])")
                     break
                 end
             end
