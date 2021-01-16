@@ -48,7 +48,7 @@ function solve(solver::FastGrid, problem::Problem) #original
 
     # preallocate work arrays
     local_lower, local_upper, CI = similar(lower), similar(lower), similar(lower)
-    for i in 1:1000#prod(n_hypers_per_dim)
+    for i in 1:10000#prod(n_hypers_per_dim)
         n = i
         for j in firstindex(CI):lastindex(CI)
             n, CI[j] = fldmod1(n, n_hypers_per_dim[j])
